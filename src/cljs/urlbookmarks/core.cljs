@@ -1,8 +1,13 @@
 (ns urlbookmarks.core
     (:require [reagent.core :as r]
-              [ajax.core :as ajax]))
+              [ajax.core :as ajax]
+              [secretary.core :as secretary :refer-macros [defroute]]))
 
 (enable-console-print!)
+
+(declare home)
+
+(secretary/set-config! :prefix "#")
 
 (def category ["teaching" "cooking" "sports" "lifestyle" "books"])
 
@@ -23,6 +28,30 @@
                (add-to-vector (url-map "www.google.com" "searching for anything" "books"))
                (add-to-vector (url-map "www.example.com" "show examples" "teaching"))))
 
+(defn remove-from-vector [ubm1 id1]
+  (remove #(= (:id %) id1) @ubm1))
+
+(defn book-marks []
+  [:div
+   [:table
+    [:tr
+     [:th "Id"]
+     [:th "Url"]
+     [:th "Description"]
+     [:th "Category"]]
+    (for [i (range (count @ubm))]
+      ^{:key i}
+      [:tr
+       [:td (get-in @ubm [i :id])]
+       [:td (get-in @ubm [i :url])]
+       [:td (get-in @ubm [i :description])]
+       [:td (get-in @ubm [i :category])]
+       [:td
+        [:button {:on-click #(reset! ubm (remove-from-vector ubm (get-in @ubm [i :id])))} "Delete"]]])]])
+
+(defroute "/display" []
+  (home [book-marks]))
+
 (defn root-component []
   (let [url (r/atom nil)
         desc (r/atom nil)
@@ -31,7 +60,9 @@
       [:div
        [:h1 "Url Bookmarks"]
        [:div 
-        [:button "List All Bookmarks"]]
+        
+        [:button {:type "submit"
+                  :on-click #(secretary/dispatch! "/display")} "List All Bookmarks"]]
        [:div
         [:span "Url"]
         [:input {:type "text"
@@ -55,7 +86,12 @@
                                 (reset! desc nil))} "Reset"]]]
        [:p (str @ubm)]])))
 
-(defn ^:export main []
+#_(defn ^:export main []
   (r/render-component
-   [root-component]
-   (js/document.getElementById "app")))
+     [root-component]
+     (js/document.getElementById "app")))
+
+(defn home [comp]
+  (r/render-component comp  (js/document.getElementById "app")))
+
+(home [root-component])

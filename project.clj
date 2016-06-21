@@ -18,7 +18,8 @@
   :profiles {:dev {:dependencies [[com.cemerick/piggieback "0.2.1"]
                                   [figwheel-sidecar "0.5.0-2"]
                                   [cljs-ajax "0.5.1"]
-                                  [reagent "0.5.1"]]
+                                  [reagent "0.5.1"]
+                                  [secretary "1.2.3"]]
                    :source-paths ["dev/clj" "dev/cljs"]
                    :resource-paths ["dev/resources"]}
              :uberjar {:main urlbookmarks.core
