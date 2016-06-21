@@ -34,20 +34,23 @@
 (defn book-marks []
   [:div
    [:table
-    [:tr
-     [:th "Id"]
-     [:th "Url"]
-     [:th "Description"]
-     [:th "Category"]]
-    (for [i (range (count @ubm))]
-      ^{:key i}
-      [:tr
-       [:td (get-in @ubm [i :id])]
-       [:td (get-in @ubm [i :url])]
-       [:td (get-in @ubm [i :description])]
-       [:td (get-in @ubm [i :category])]
-       [:td
-        [:button {:on-click #(reset! ubm (remove-from-vector ubm (get-in @ubm [i :id])))} "Delete"]]])]])
+    [:thead
+     [:tr
+      [:th "Id"]
+      [:th "Url"]
+      [:th "Description"]
+      [:th "Category"]]]
+    [:tbody
+     (for [i (range (count @ubm))]
+       ^{:key i}
+       [:tr
+        [:td (get-in @ubm [i :id])]
+        [:td (get-in @ubm [i :url])]
+        [:td (get-in @ubm [i :description])]
+        [:td (get-in @ubm [i :category])]
+        [:td
+         [:button {:on-click #(reset! ubm (remove-from-vector ubm (get-in @ubm [i :id])))} "Delete"]]])]]
+   [:p (str @ubm)]])
 
 (defroute "/display" []
   (home [book-marks]))
